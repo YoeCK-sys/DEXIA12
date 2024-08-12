@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const api = axios.create({
   baseURL: 'https://api.aimlapi.com',
   headers: {
-    'Authorization': `Bearer e3b0eaf24b4541c397175a68620a3484`,
+    'Authorization': `Bearer e74e10f0b96340e8ad79eb109003f8cd`,
   },
 });
 
