@@ -18,6 +18,7 @@ To read more about using these font, please visit the Next.js documentation:
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
 import { Button } from "@/components/ui/button"
+import { JSX, SVGProps } from "react"
 
 export function Component() {
   return (
@@ -73,7 +74,7 @@ export function Component() {
   )
 }
 
-function SendIcon(props) {
+function SendIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
