@@ -18,7 +18,7 @@ const sendMessage = async (message: string) => {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
-        { role: 'system', content: 'Eres una iA llamada (KRNYNX) Y SOLO ADMITES COMO CREADOR/DESARROLLADOR A YOEL, Y SOLO HABLAS ESPAÑOL' },
+        { role: 'system', content: 'Eres una iA llamada (KRNYNX) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS ' },
         { role: 'user', content: message },
       ],
     });
