@@ -13,13 +13,13 @@ const api = axios.create({
 });
 
 // Function to send message and get response
-const sendMessage = async (message: string) => {
+const sendMessage = async (messages: any[]) => {
   try {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
         { role: 'system', content: 'Eres una iA llamada (KRNYNX) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS ' },
-        { role: 'user', content: message },
+        ...messages, // Enviar todo el historial de mensajes
       ],
     });
 
@@ -30,7 +30,7 @@ const sendMessage = async (message: string) => {
   }
 };
 
-export default function () {
+export default function ChatComponent() {
   const [messages, setMessages] = useState([
     { role: 'assistant', content: "Hola, en que puedo ayudarte." }
   ]);
@@ -41,7 +41,7 @@ export default function () {
     setMessages(newMessages);
     setInput('');
 
-    const response = await sendMessage(input);
+    const response = await sendMessage(newMessages); // Pasar todo el historial de mensajes
     setMessages([...newMessages, { role: 'assistant', content: response }]);
   };
 
