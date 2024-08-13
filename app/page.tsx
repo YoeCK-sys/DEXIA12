@@ -35,7 +35,7 @@ const sendMessage = async (messages: any[], retries = 3) => {
 };
 
 export default function ChatComponent() {
-  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hola, en qué puedo ayudarte." }]);
+  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hola, en qué puedo ayudarte. ;)" }]);
   const [input, setInput] = useState('');
 
   // Cargar el historial de chat desde localStorage cuando el componente se monta
