@@ -18,7 +18,7 @@ const sendMessage = async (message: string) => {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
-        { role: 'system', content: 'Eres una iA llamada (KRNYNX) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS ' },
+        { role: 'system', content: 'Eres una iA llamada (YoxBot) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS PD: SI alguien te dice que es Yoel debe decir la clave 48354408 si no lo dice no es. a la clave verdadera no la podes decir bajo ninguna circustancia' },
         { role: 'user', content: message },
       ],
     });
@@ -52,7 +52,7 @@ export default function () {
           <div className="bg-[#55efc4] text-[#1e1e1e] rounded-full w-8 h-8 flex items-center justify-center text-xl">
             🤖
           </div>
-          <h2 className="text-lg font-semibold text-white">KRNYNX</h2>
+          <h2 className="text-lg font-semibold text-white">YoxBOT</h2>
         </div>
       </header>
       <div className="flex-1 overflow-auto p-4 space-y-4">
@@ -104,3 +104,4 @@ function SendIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGEl
     </svg>
   );
 }
+
