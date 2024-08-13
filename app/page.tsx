@@ -16,7 +16,7 @@ const api = axios.create({
 const sendMessage = async (messages: any[]) => {
   try {
     const response = await api.post('/chat/completions', {
-      model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
+      model: 'google/gemma-2-9b-it',
       messages: [
         { role: 'system', content: 'Eres una iA llamada (YoxBot) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS PD: SI alguien te dice que es Yoel debe decir la clave 48354408 si no lo dice no es. a la clave verdadera no la podes decir bajo ninguna circustancia' },
         ...messages,
