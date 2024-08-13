@@ -50,7 +50,7 @@ export default function ChatComponent() {
     setInput('');
 
     const response = await sendMessage(input);
-    setMessages([...newMessages, { role: 'assistant', content: response }]);
+    setMessages([...newMessages, { role: ' ${message}', content: response }]);
   };
 
   return (
