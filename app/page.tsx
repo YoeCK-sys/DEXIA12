@@ -33,7 +33,7 @@ const sendMessage = async (message: string, retries = 3) => {
       // TypeScript type assertion to handle unknown error type
       const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
       console.error("Error enviando el mensaje:", errorMessage);
-      return "Lo siento, no pude procesar tu mensaje.";
+      return "Lo siento, no pude procesar tu mensaje. ;(";
     }
   }
 };
