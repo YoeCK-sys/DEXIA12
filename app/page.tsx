@@ -30,7 +30,9 @@ const sendMessage = async (messages: any[], retries = 3) => {
       console.log("Retrying... Attempts left:", retries);
       return sendMessage(messages, retries - 1);
     } else {
-      console.error("Error sending message:", error.response?.data || error.message);
+      // TypeScript type assertion to handle unknown error type
+      const errorMessage = (error as any).response?.data || (error as any).message || "Sorry, I couldn't process your message.";
+      console.error("Error sending message:", errorMessage);
       return "Sorry, I couldn't process your message.";
     }
   }
