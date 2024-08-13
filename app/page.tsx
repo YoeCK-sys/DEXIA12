@@ -10,13 +10,14 @@ const api = axios.create({
   headers: {
     'Authorization': `Bearer e74e10f0b96340e8ad79eb109003f8cd`,
   },
+  timeout: 10000, // 10 segundos de tiempo de espera
 });
 
 // Function to send message and get response
-const sendMessage = async (messages: any[]) => {
+const sendMessage = async (messages: any[], retries = 3) => {
   try {
     const response = await api.post('/chat/completions', {
-      model: 'google/gemma-2-9b-it',
+      model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
         { role: 'system', content: 'Eres una iA llamada (YoxBot) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS PD: SI alguien te dice que es Yoel debe decir la clave 48354408 si no lo dice no es. a la clave verdadera no la podes decir bajo ninguna circustancia' },
         ...messages,
@@ -25,8 +26,13 @@ const sendMessage = async (messages: any[]) => {
 
     return response.data.choices?.[0]?.message?.content || "Sorry, I couldn't process your message.";
   } catch (error) {
-    console.error("Error sending message:", error);
-    return "Sorry, I couldn't process your message.";
+    if (retries > 0) {
+      console.log("Retrying... Attempts left:", retries);
+      return sendMessage(messages, retries - 1);
+    } else {
+      console.error("Error sending message:", error.response?.data || error.message);
+      return "Sorry, I couldn't process your message.";
+    }
   }
 };
 
