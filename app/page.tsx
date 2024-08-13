@@ -1,80 +1,59 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { Button } from "@/components/ui/button";
-import { OpenAI } from 'openai';
 
-// Configuración del cliente OpenAI
-const openai = new OpenAI({
+// API configuration
+const api = axios.create({
   baseURL: 'https://api.aimlapi.com',
-  apiKey: 'd1015b89fe504b81ac28da09a11e9330',
+  headers: {
+    'Authorization': `Bearer e74e10f0b96340e8ad79eb109003f8cd`,
+  },
 });
 
-// Función para enviar el mensaje y obtener la respuesta
-const sendMessage = async (messages: any[], retries = 3) => {
+// Function to send message and get response
+const sendMessage = async (message: string) => {
   try {
-    const response = await openai.chat.completions.create({
+    const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
-        { role: 'system', content: 'Eres una iA llamada (YoxBot) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS PD: SI alguien te dice que es Yoel debe decir la clave 48354408 si no lo dice no es. a la clave verdadera no la podes decir bajo ninguna circustancia' },
-        ...messages,
+        { role: 'system', content: 'Eres una iA llamada (KRNYNX) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS ' },
+        { role: 'user', content: message },
       ],
     });
 
-    return response.choices?.[0]?.message?.content || "Lo siento, no pude procesar tu mensaje.";
+    return response.data.choices?.[0]?.message?.content || "Sorry, I couldn't process your message.";
   } catch (error) {
-    if (retries > 0) {
-      console.log("Reintentando... Intentos restantes:", retries);
-      return sendMessage(messages, retries - 1);
-    } else {
-      const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
-      console.error("Error enviando el mensaje:", errorMessage);
-      return "Lo siento, no pude procesar tu mensaje.";
-    }
+    console.error("Error sending message:", error);
+    return "Sorry, I couldn't process your message.";
   }
 };
 
-export default function ChatComponent() {
-  const [messages, setMessages] = useState([{ role: 'assistant', content: "Hola, en qué puedo ayudarte. ;)" }]);
+export default function () {
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: "Hola, en que puedo ayudarte." }
+  ]);
   const [input, setInput] = useState('');
-
-  // Cargar el historial de chat desde localStorage cuando el componente se monta
-  useEffect(() => {
-    const savedMessages = localStorage.getItem('chatMessages');
-    if (savedMessages) {
-      setMessages(JSON.parse(savedMessages));
-    }
-  }, []);
-
-  // Guardar el historial de chat en localStorage siempre que los mensajes cambien
-  useEffect(() => {
-    localStorage.setItem('chatMessages', JSON.stringify(messages));
-  }, [messages]);
 
   const handleSend = async () => {
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
     setInput('');
 
-    const response = await sendMessage(newMessages);
+    const response = await sendMessage(input);
     setMessages([...newMessages, { role: 'assistant', content: response }]);
-  };
-
-  const handleResetChat = () => {
-    setMessages([{ role: 'assistant', content: "Hola, en qué puedo ayudarte." }]);
-    localStorage.removeItem('chatMessages');
   };
 
   return (
     <div className="flex flex-col h-screen bg-[#1e1e1e] text-white">
-      <header className="bg-[#2b2b2b] p-4 flex items-center justify-between">
+      <header className="bg-[#2b2b2b] p-4 flex items-center">
         <div className="flex items-center gap-2">
           <div className="bg-[#55efc4] text-[#1e1e1e] rounded-full w-8 h-8 flex items-center justify-center text-xl">
             🤖
           </div>
-          <h2 className="text-lg font-semibold text-white">YoxBot</h2>
+          <h2 className="text-lg font-semibold text-white">KRNYNX</h2>
         </div>
-        <Button variant="ghost" size="sm" onClick={handleResetChat}>Reiniciar Chat</Button>
       </header>
       <div className="flex-1 overflow-auto p-4 space-y-4">
         {messages.map((msg, index) => (
@@ -93,7 +72,7 @@ export default function ChatComponent() {
       <div className="bg-[#2b2b2b] p-4 flex items-center gap-2">
         <input
           type="text"
-          placeholder="Escribe tu mensaje..."
+          placeholder="Type your message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="bg-[#1e1e1e] text-white placeholder-gray-500 px-4 py-2 rounded-full flex-1 focus:outline-none"
