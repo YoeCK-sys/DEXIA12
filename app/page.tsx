@@ -24,16 +24,16 @@ const sendMessage = async (messages: any[], retries = 3) => {
       ],
     });
 
-    return response.data.choices?.[0]?.message?.content || "Sorry, I couldn't process your message.";
+    return response.data.choices?.[0]?.message?.content || "Lo siento, no pude procesar tu mensaje.";
   } catch (error) {
     if (retries > 0) {
-      console.log("Retrying... Attempts left:", retries);
+      console.log("Reintentando... Intentos restantes:", retries);
       return sendMessage(messages, retries - 1);
     } else {
       // TypeScript type assertion to handle unknown error type
-      const errorMessage = (error as any).response?.data || (error as any).message || "Sorry, I couldn't process your message.";
-      console.error("Error sending message:", errorMessage);
-      return "Sorry, I couldn't process your message.";
+      const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
+      console.error("Error enviando el mensaje:", errorMessage);
+      return "Lo siento, no pude procesar tu mensaje.";
     }
   }
 };
