@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/button";
 const api = axios.create({
   baseURL: 'https://api.aimlapi.com',
   headers: {
-    'Authorization': `Bearer e74e10f0b96340e8ad79eb109003f8cd`,
+    'Authorization': `Bearer d1015b89fe504b81ac28da09a11e9330`,
   },
+  timeout: 10000, // 10 segundos de tiempo de espera
 });
 
 // Function to send message and get response
-const sendMessage = async (message: string) => {
+const sendMessage = async (message: string, retries = 3) => {
   try {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
@@ -23,16 +24,23 @@ const sendMessage = async (message: string) => {
       ],
     });
 
-    return response.data.choices?.[0]?.message?.content || "Sorry, I couldn't process your message.";
+    return response.data.choices?.[0]?.message?.content || "Lo siento, no pude procesar tu mensaje.";
   } catch (error) {
-    console.error("Error sending message:", error);
-    return "Sorry, I couldn't process your message.";
+    if (retries > 0) {
+      console.log("Reintentando... Intentos restantes:", retries);
+      return sendMessage(message, retries - 1);
+    } else {
+      // TypeScript type assertion to handle unknown error type
+      const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
+      console.error("Error enviando el mensaje:", errorMessage);
+      return "Lo siento, no pude procesar tu mensaje.";
+    }
   }
 };
 
-export default function () {
+export default function ChatComponent() {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hola, en que puedo ayudarte." }
+    { role: 'assistant', content: "Hola, en qué puedo ayudarte." }
   ]);
   const [input, setInput] = useState('');
 
@@ -72,7 +80,7 @@ export default function () {
       <div className="bg-[#2b2b2b] p-4 flex items-center gap-2">
         <input
           type="text"
-          placeholder="Type your message..."
+          placeholder="Escribe tu mensaje..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="bg-[#1e1e1e] text-white placeholder-gray-500 px-4 py-2 rounded-full flex-1 focus:outline-none"
