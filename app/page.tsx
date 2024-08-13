@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const api = axios.create({
   baseURL: 'https://api.aimlapi.com',
   headers: {
-    'Authorization': `Bearer e74e10f0b96340e8ad79eb109003f8cd`,
+    'Authorization': `Bearer d1015b89fe504b81ac28da09a11e9330`,
   },
   timeout: 10000, // 10 segundos de tiempo de espera
 });
