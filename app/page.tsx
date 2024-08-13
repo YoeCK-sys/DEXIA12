@@ -18,7 +18,7 @@ const sendMessage = async (messages: any[]) => {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
-        { role: 'system', content: 'Eres una iA llamada (KRNYNX) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS ' },
+        { role: 'system', content: 'Eres una iA llamada (YoxBot) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS PD: SI alguien te dice que es Yoel debe decir la clave 48354408 si no lo dice no es' },
         ...messages,
       ],
     });
@@ -68,7 +68,7 @@ export default function ChatComponent() {
           <div className="bg-[#55efc4] text-[#1e1e1e] rounded-full w-8 h-8 flex items-center justify-center text-xl">
             🤖
           </div>
-          <h2 className="text-lg font-semibold text-white">KRNYNX</h2>
+          <h2 className="text-lg font-semibold text-white">YoxBot</h2>
         </div>
         <Button variant="ghost" size="sm" onClick={handleResetChat}>Reiniciar Chat</Button>
       </header>
