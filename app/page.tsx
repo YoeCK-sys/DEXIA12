@@ -40,7 +40,7 @@ const sendMessage = async (message: string, retries = 3) => {
 
 export default function ChatComponent() {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hola, en qué puedo ayudarte." }
+    { role: 'assistant', content: "Hola, en qué puedo ayudarte. ;]" }
   ]);
   const [input, setInput] = useState('');
 
@@ -60,7 +60,7 @@ export default function ChatComponent() {
           <div className="bg-[#55efc4] text-[#1e1e1e] rounded-full w-8 h-8 flex items-center justify-center text-xl">
             🤖
           </div>
-          <h2 className="text-lg font-semibold text-white">YoxBOT</h2>
+          <h2 className="text-lg font-semibold text-white">YoxBOT XD</h2>
         </div>
       </header>
       <div className="flex-1 overflow-auto p-4 space-y-4">
