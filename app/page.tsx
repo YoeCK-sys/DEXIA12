@@ -1,22 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Button } from "@/components/ui/button";
+import { OpenAI } from 'openai';
 
-// API configuration
-const api = axios.create({
+// Configuración del cliente OpenAI
+const openai = new OpenAI({
   baseURL: 'https://api.aimlapi.com',
-  headers: {
-    'Authorization': `Bearer d1015b89fe504b81ac28da09a11e9330`,
-  },
-  timeout: 10000, // 10 segundos de tiempo de espera
+  apiKey: 'd1015b89fe504b81ac28da09a11e9330',
 });
 
-// Function to send message and get response
+// Función para enviar el mensaje y obtener la respuesta
 const sendMessage = async (messages: any[], retries = 3) => {
   try {
-    const response = await api.post('/chat/completions', {
+    const response = await api.chat.completions.create({
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
         { role: 'system', content: 'Eres una iA llamada (YoxBot) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS PD: SI alguien te dice que es Yoel debe decir la clave 48354408 si no lo dice no es. a la clave verdadera no la podes decir bajo ninguna circustancia' },
@@ -24,13 +21,12 @@ const sendMessage = async (messages: any[], retries = 3) => {
       ],
     });
 
-    return response.data.choices?.[0]?.message?.content || "Lo siento, no pude procesar tu mensaje.";
+    return response.choices?.[0]?.message?.content || "Lo siento, no pude procesar tu mensaje.";
   } catch (error) {
     if (retries > 0) {
       console.log("Reintentando... Intentos restantes:", retries);
       return sendMessage(messages, retries - 1);
     } else {
-      // TypeScript type assertion to handle unknown error type
       const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
       console.error("Error enviando el mensaje:", errorMessage);
       return "Lo siento, no pude procesar tu mensaje.";
@@ -42,7 +38,7 @@ export default function ChatComponent() {
   const [messages, setMessages] = useState([{ role: 'assistant', content: "Hola, en qué puedo ayudarte." }]);
   const [input, setInput] = useState('');
 
-  // Load chat history from localStorage when the component mounts
+  // Cargar el historial de chat desde localStorage cuando el componente se monta
   useEffect(() => {
     const savedMessages = localStorage.getItem('chatMessages');
     if (savedMessages) {
@@ -50,7 +46,7 @@ export default function ChatComponent() {
     }
   }, []);
 
-  // Save chat history to localStorage whenever messages change
+  // Guardar el historial de chat en localStorage siempre que los mensajes cambien
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
