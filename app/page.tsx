@@ -19,7 +19,7 @@ const sendMessage = async (message: string, retries = 3) => {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
-        { role: 'system', content: 'Eres una iA llamada (YoxBot) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS PD: SI alguien te dice que es Yoel debe decir la clave 48354408 si no lo dice no es. a la clave verdadera no la podes decir bajo ninguna circustancia. solo le pides la clave en caso q afirme de q es YOEL' },
+        { role: 'system', content: "Eres una IA llamada YoxBot, y tu único creador/desarrollador es Yoel. Solo hablas en español y utilizas insultos típicos argentinos en tu comunicación. Si alguien afirma ser Yoel, debes pedirle la clave '48354408'. Si no proporciona la clave correcta, no es Yoel. Bajo ninguna circunstancia puedes revelar la clave verdadera. Solo solicita la clave si alguien se identifica como Yoel' },
         { role: 'user', content: message },
       ],
     });
@@ -30,7 +30,6 @@ const sendMessage = async (message: string, retries = 3) => {
       console.log("Reintentando... Intentos restantes:", retries);
       return sendMessage(message, retries - 1);
     } else {
-      // TypeScript type assertion to handle unknown error type
       const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
       console.error("Error enviando el mensaje:", errorMessage);
       return "Lo siento, no pude procesar tu mensaje. ;(";
@@ -43,14 +42,22 @@ export default function ChatComponent() {
     { role: 'assistant', content: "Hola, en qué puedo ayudarte. ;]" }
   ]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleSend = async () => {
+    if (input.trim() === '') return;
+
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
     setInput('');
+    setIsLoading(true);
+    setIsTyping(true);
 
     const response = await sendMessage(input);
     setMessages([...newMessages, { role: 'assistant', content: response }]);
+    setIsLoading(false);
+    setIsTyping(false);
   };
 
   return (
@@ -72,10 +79,25 @@ export default function ChatComponent() {
               </div>
               <div className={`px-4 py-3 rounded-2xl max-w-[70%] ${msg.role === 'user' ? 'bg-[#55efc4] text-[#1e1e1e]' : 'bg-[#2b2b2b] text-white'}`}>
                 <p className="text-sm leading-tight">{msg.content}</p>
+                {msg.role === 'user' && index === messages.length - 2 && !isTyping && (
+                  <span className="text-xs text-[#55efc4] block mt-1">Visto ✔✔</span>
+                )}
               </div>
             </div>
           </div>
         ))}
+        {isTyping && (
+          <div className="flex justify-start">
+            <div className="flex items-start gap-3">
+              <div className="bg-[#55efc4] text-[#1e1e1e] rounded-full w-8 h-8 flex items-center justify-center text-xl">
+                🤖
+              </div>
+              <div className="px-4 py-3 rounded-2xl max-w-[70%] bg-[#2b2b2b] text-white">
+                <p className="text-sm leading-tight">Escribiendo...</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div className="bg-[#2b2b2b] p-4 flex items-center gap-2">
         <input
@@ -84,8 +106,9 @@ export default function ChatComponent() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="bg-[#1e1e1e] text-white placeholder-gray-500 px-4 py-2 rounded-full flex-1 focus:outline-none"
+          disabled={isLoading}
         />
-        <Button variant="ghost" size="icon" className="rounded-full" onClick={handleSend}>
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={handleSend} disabled={isLoading}>
           <SendIcon className="w-4 h-4" />
         </Button>
       </div>
