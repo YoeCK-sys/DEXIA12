@@ -8,31 +8,39 @@ import { Button } from "@/components/ui/button";
 const api = axios.create({
   baseURL: 'https://api.aimlapi.com',
   headers: {
-    'Authorization': `Bearer e74e10f0b96340e8ad79eb109003f8cd`,
+    'Authorization': `Bearer d1015b89fe504b81ac28da09a11e9330`,
   },
+  timeout: 10000, // 10 segundos de tiempo de espera
 });
 
 // Function to send message and get response
-const sendMessage = async (message: string) => {
+const sendMessage = async (message: string, retries = 3) => {
   try {
-    const response = await api.post('/chat/completions', {
+    const response = await api.post('https://api.aimlapi.com/models', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
-        { role: 'system', content: 'Eres una iA llamada (KRNYNX) Y SOLO YOEL ES TU CREADOR/DESARROLLADOR, Y SOLO HABLAS ESPAÑOL, HABLAS CON INSULTOS ARGENTINOS ' },
+        { role: 'system', content: 'Eres una iA llamada (PEPE) que es muy amigo de ramiro y le gusta a responder preguntas de ramiro' },
         { role: 'user', content: message },
       ],
     });
 
-    return response.data.choices?.[0]?.message?.content || "Sorry, I couldn't process your message.";
+    return response.data.choices?.[0]?.message?.content || "Lo siento, no pude procesar tu mensaje.";
   } catch (error) {
-    console.error("Error sending message:", error);
-    return "Sorry, I couldn't process your message.";
+    if (retries > 0) {
+      console.log("Reintentando... Intentos restantes:", retries);
+      return sendMessage(message, retries - 1);
+    } else {
+      // TypeScript type assertion to handle unknown error type
+      const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
+      console.error("Error enviando el mensaje:", errorMessage);
+      return "Lo siento, no pude procesar tu mensaje.";
+    }
   }
 };
 
-export default function () {
+export default function ChatComponent() {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hola, en que puedo ayudarte." }
+    { role: 'assistant', content: "Hola, en qué puedo ayudarte." }
   ]);
   const [input, setInput] = useState('');
 
@@ -52,7 +60,7 @@ export default function () {
           <div className="bg-[#55efc4] text-[#1e1e1e] rounded-full w-8 h-8 flex items-center justify-center text-xl">
             🤖
           </div>
-          <h2 className="text-lg font-semibold text-white">KRNYNX</h2>
+          <h2 className="text-lg font-semibold text-white">YoxBOT</h2>
         </div>
       </header>
       <div className="flex-1 overflow-auto p-4 space-y-4">
@@ -72,7 +80,7 @@ export default function () {
       <div className="bg-[#2b2b2b] p-4 flex items-center gap-2">
         <input
           type="text"
-          placeholder="Type your message..."
+          placeholder="Escribe tu mensaje..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="bg-[#1e1e1e] text-white placeholder-gray-500 px-4 py-2 rounded-full flex-1 focus:outline-none"
