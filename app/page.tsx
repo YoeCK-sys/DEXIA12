@@ -13,10 +13,10 @@ const api = axios.create({
   timeout: 10000, // 10 segundos de tiempo de espera
 });
 
-// Function to send message and get response
+// Function to send message and get responsej
 const sendMessage = async (message: string, retries = 12) => {
   try {
-    const response = await api.post('https://api.aimlapi.com/models', {
+    const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       messages: [
         { role: 'system', content: "sos TestBOT normalmente hablas como argentino mal hablado, no aceptas a nadie como creador " },
