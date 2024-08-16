@@ -14,7 +14,7 @@ const api = axios.create({
 });
 
 // Function to send message and get response
-const sendMessage = async (message: string, retries = 10) => {
+const sendMessage = async (message: string, retries = 12) => {
   try {
     const response = await api.post('https://api.aimlapi.com/models', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
