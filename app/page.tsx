@@ -4,6 +4,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
 
+// Definir la interfaz para los mensajes
+interface Message {
+  role: string;
+  content: string;
+  seen?: boolean;
+}
+
 // API configuration
 const api = axios.create({
   baseURL: 'https://api.aimlapi.com',
@@ -14,7 +21,7 @@ const api = axios.create({
 });
 
 // Function to send message and get response
-const sendMessage = async (message: string, retries = 12) => {
+const sendMessage = async (message: string, retries = 12): Promise<string> => {
   try {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
@@ -30,7 +37,6 @@ const sendMessage = async (message: string, retries = 12) => {
       console.log("Reintentando... Intentos restantes:", retries);
       return sendMessage(message, retries - 1);
     } else {
-      // TypeScript type assertion to handle unknown error type
       const errorMessage = (error as any).response?.data || (error as any).message || "Lo siento, no pude procesar tu mensaje.";
       console.error("Error enviando el mensaje:", errorMessage);
       return "Lo siento, no pude procesar tu mensaje.";
@@ -39,35 +45,36 @@ const sendMessage = async (message: string, retries = 12) => {
 };
 
 export default function ChatComponent() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: "Hola, en qué puedo ayudarte." }
   ]);
   const [input, setInput] = useState('');
-  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
 
   const handleSend = async () => {
-    if (input.trim() === '') return;
+    if (!input.trim()) return;
 
-    setSending(true);
-    setMessages([...messages, { role: 'user', content: input }]);
+    setLoading(true);
+    const newMessages = [...messages, { role: 'user', content: input, seen: false }];
+    setMessages(newMessages);
     setInput('');
 
+    setTyping(true);
     const response = await sendMessage(input);
-    setMessages([...messages, { role: 'user', content: input }, { role: 'assistant', content: response }]);
-    setSending(false);
+    setTyping(false);
+    
+    setMessages([...newMessages, { role: 'assistant', content: response, seen: true }]);
+    setLoading(false);
   };
 
   useEffect(() => {
-    const typingTimeout = setTimeout(() => {
-      setTyping(false);
+    const typingTimer = setTimeout(() => {
+      if (input) setTyping(true);
+      else setTyping(false);
     }, 1000);
 
-    if (input.trim() !== '') {
-      setTyping(true);
-    }
-
-    return () => clearTimeout(typingTimeout);
+    return () => clearTimeout(typingTimer);
   }, [input]);
 
   return (
@@ -89,7 +96,11 @@ export default function ChatComponent() {
               </div>
               <div className={`px-4 py-3 rounded-2xl max-w-[70%] ${msg.role === 'user' ? 'bg-[#55efc4] text-[#1e1e1e]' : 'bg-[#2b2b2b] text-white'}`}>
                 <p className="text-sm leading-tight">{msg.content}</p>
-                {msg.role === 'assistant' && <div className="text-xs text-gray-500 mt-1">✔️</div>}
+                {msg.role === 'user' && (
+                  <div className="text-gray-400 text-xs mt-1">
+                    {msg.seen ? 'Visto' : 'Enviado'}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -104,13 +115,7 @@ export default function ChatComponent() {
           onChange={(e) => setInput(e.target.value)}
           className="bg-[#1e1e1e] text-white placeholder-gray-500 px-4 py-2 rounded-full flex-1 focus:outline-none"
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full"
-          onClick={handleSend}
-          disabled={sending}
-        >
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={handleSend} disabled={loading}>
           <SendIcon className="w-4 h-4" />
         </Button>
       </div>
