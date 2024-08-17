@@ -61,7 +61,7 @@ export default function ChatComponent() {
     const response = await sendMessage(input);
     setTyping(false); // La IA deja de "Escribir..."
     
-    setMessages([...newMessages, { role: 'assistant', content: response, seen: true }]);
+    setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: response, seen: true }]);
     setLoading(false);
   };
 
@@ -110,6 +110,7 @@ export default function ChatComponent() {
     </div>
   );
 }
+
 
 function SendIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) {
   return (
