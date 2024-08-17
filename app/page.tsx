@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ const api = axios.create({
   timeout: 10000, // 10 segundos de tiempo de espera
 });
 
-// Function to send message and get responsej
+// Function to send message and get response
 const sendMessage = async (message: string, retries = 12) => {
   try {
     const response = await api.post('/chat/completions', {
@@ -43,15 +43,32 @@ export default function ChatComponent() {
     { role: 'assistant', content: "Hola, en qué puedo ayudarte." }
   ]);
   const [input, setInput] = useState('');
+  const [sending, setSending] = useState(false);
+  const [typing, setTyping] = useState(false);
 
   const handleSend = async () => {
-    const newMessages = [...messages, { role: 'user', content: input }];
-    setMessages(newMessages);
+    if (input.trim() === '') return;
+
+    setSending(true);
+    setMessages([...messages, { role: 'user', content: input }]);
     setInput('');
 
     const response = await sendMessage(input);
-    setMessages([...newMessages, { role: 'assistant', content: response }]);
+    setMessages([...messages, { role: 'user', content: input }, { role: 'assistant', content: response }]);
+    setSending(false);
   };
+
+  useEffect(() => {
+    const typingTimeout = setTimeout(() => {
+      setTyping(false);
+    }, 1000);
+
+    if (input.trim() !== '') {
+      setTyping(true);
+    }
+
+    return () => clearTimeout(typingTimeout);
+  }, [input]);
 
   return (
     <div className="flex flex-col h-screen bg-[#1e1e1e] text-white">
@@ -72,10 +89,12 @@ export default function ChatComponent() {
               </div>
               <div className={`px-4 py-3 rounded-2xl max-w-[70%] ${msg.role === 'user' ? 'bg-[#55efc4] text-[#1e1e1e]' : 'bg-[#2b2b2b] text-white'}`}>
                 <p className="text-sm leading-tight">{msg.content}</p>
+                {msg.role === 'assistant' && <div className="text-xs text-gray-500 mt-1">✔️</div>}
               </div>
             </div>
           </div>
         ))}
+        {typing && <div className="text-gray-400">Escribiendo...</div>}
       </div>
       <div className="bg-[#2b2b2b] p-4 flex items-center gap-2">
         <input
@@ -85,7 +104,13 @@ export default function ChatComponent() {
           onChange={(e) => setInput(e.target.value)}
           className="bg-[#1e1e1e] text-white placeholder-gray-500 px-4 py-2 rounded-full flex-1 focus:outline-none"
         />
-        <Button variant="ghost" size="icon" className="rounded-full" onClick={handleSend}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          onClick={handleSend}
+          disabled={sending}
+        >
           <SendIcon className="w-4 h-4" />
         </Button>
       </div>
