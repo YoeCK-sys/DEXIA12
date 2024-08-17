@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
 
-// Definir la interfaz para los mensajes
-interface Message {
+type MessageType = {
   role: string;
   content: string;
   seen?: boolean;
-}
+};
 
-// API configuration
 const api = axios.create({
   baseURL: 'https://api.aimlapi.com',
   headers: {
@@ -20,8 +18,7 @@ const api = axios.create({
   timeout: 10000, // 10 segundos de tiempo de espera
 });
 
-// Function to send message and get response
-const sendMessage = async (message: string, retries = 12): Promise<string> => {
+const sendMessage = async (message: string, retries = 12) => {
   try {
     const response = await api.post('/chat/completions', {
       model: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
@@ -45,7 +42,7 @@ const sendMessage = async (message: string, retries = 12): Promise<string> => {
 };
 
 export default function ChatComponent() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<MessageType[]>([
     { role: 'assistant', content: "Hola, en qué puedo ayudarte." }
   ]);
   const [input, setInput] = useState('');
@@ -56,26 +53,17 @@ export default function ChatComponent() {
     if (!input.trim()) return;
 
     setLoading(true);
-    const newMessages = [...messages, { role: 'user', content: input, seen: false }];
+    const newMessages: MessageType[] = [...messages, { role: 'user', content: input, seen: false }];
     setMessages(newMessages);
     setInput('');
 
-    setTyping(true);
+    setTyping(true); // La IA está "Escribiendo..."
     const response = await sendMessage(input);
-    setTyping(false);
+    setTyping(false); // La IA deja de "Escribir..."
     
     setMessages([...newMessages, { role: 'assistant', content: response, seen: true }]);
     setLoading(false);
   };
-
-  useEffect(() => {
-    const typingTimer = setTimeout(() => {
-      if (input) setTyping(true);
-      else setTyping(false);
-    }, 1000);
-
-    return () => clearTimeout(typingTimer);
-  }, [input]);
 
   return (
     <div className="flex flex-col h-screen bg-[#1e1e1e] text-white">
