@@ -98,7 +98,7 @@ export default function Portfolio() {
         <div className="flex justify-center mb-8">
           <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-blue-500">
             <Image
-              src="/veshremy-pfp-14.jpg?height=160&width=160"
+              src="veshremy-pfp-14.jpg?height=160&width=160"
               alt="Yoel AG"
               layout="fill"
               objectFit="cover"
