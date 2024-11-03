@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useInView } from 'framer-motion'
 import { FaGithub, FaLinkedin, FaEnvelope, FaCode, FaPalette, FaLightbulb, FaServer, FaDatabase, FaMobile, FaDesktop, FaCloud } from 'react-icons/fa'
-import ScrollIndicator from './Scrollindicator'
+import ScrollIndicator from "../components/component/Scrollindicator
 import Image from 'next/image'
 
 const AnimatedSection = ({ children, className = '' }) => {
