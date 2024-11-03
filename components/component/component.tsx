@@ -36,31 +36,35 @@ export default function Portfolio() {
   ]
   const { scrollYProgress } = useScroll()
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+useEffect(() => {
     const handleTyping = () => {
-      const i = loopNum % titles.length
-      const fullText = titles[i]
+      const i = loopNum % titles.length;
+      const fullText = titles[i];
 
-      setDisplayText(isDeleting ? fullText.substring(0, displayText.length - 1) : fullText.substring(0, displayText.length + 1))
+      setDisplayText(isDeleting ? fullText.substring(0, displayText.length - 1) : fullText.substring(0, displayText.length + 1));
 
-      setTypingSpeed(isDeleting ? 100 : 150)
+      setTypingSpeed(isDeleting ? 100 : 150);
 
       if (!isDeleting && displayText === fullText) {
-        timer = setTimeout(() => setIsDeleting(true), 4000)
+        timerRef.current = setTimeout(() => setIsDeleting(true), 4000);
       } else if (isDeleting && displayText === '') {
-        setIsDeleting(false)
-        setLoopNum(loopNum + 1)
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
       } else {
-        timer = setTimeout(handleTyping, typingSpeed)
+        timerRef.current = setTimeout(handleTyping, typingSpeed);
       }
     }
 
-    timer = setTimeout(handleTyping, typingSpeed)
+    timerRef.current = setTimeout(handleTyping, typingSpeed);
 
-    return () => clearTimeout(timer)
-  }, [displayText, isDeleting, loopNum, titles, typingSpeed])
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+}, [displayText, isDeleting, loopNum, titles, typingSpeed]);
 
   const projects = [
     {
