@@ -102,6 +102,7 @@ export default function Portfolio() {
               alt="Yoel AG"
               layout="fill"
               objectFit="cover"
+              title="YoelAG"
             />
           </div>
         </div>
