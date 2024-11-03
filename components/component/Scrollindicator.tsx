@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { FaCode, FaDatabase, FaServer, FaMobile, FaDesktop, FaCloud } from 'react-icons/fa'
 
 const icons = [FaCode, FaDatabase, FaServer, FaMobile, FaDesktop, FaCloud]
@@ -29,7 +29,7 @@ export default function ScrollIndicator() {
           transition={{ delay: 0.5 }}
         >
           {mounted && (
-            <motion.span>{`Progreso: ${Math.round(scrollYProgress.get() * 100)}%`}</motion.span>
+            <motion.span>{`Progress: ${Math.round(scrollYProgress.get() * 100)}%`}</motion.span>
           )}
         </motion.div>
         <div className="flex-1 mx-4">
@@ -49,13 +49,15 @@ export default function ScrollIndicator() {
               >
                 <motion.div
                   style={{
-                    scale: useSpring(
-                      scrollYProgress.get() > index / icons.length ? 1.2 : 0.8,
-                      { stiffness: 300, damping: 30 }
+                    scale: useTransform(
+                      scrollYProgress,
+                      [index / icons.length, (index + 1) / icons.length],
+                      [0.8, 1.2]
                     ),
-                    opacity: useSpring(
-                      scrollYProgress.get() > index / icons.length ? 1 : 0.5,
-                      { stiffness: 300, damping: 30 }
+                    opacity: useTransform(
+                      scrollYProgress,
+                      [index / icons.length, (index + 1) / icons.length],
+                      [0.5, 1]
                     )
                   }}
                 >
@@ -71,10 +73,10 @@ export default function ScrollIndicator() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span className="hidden sm:inline">Desplázate para más</span>
-          <span className="sm:hidden">Desplázate</span>
+          <span className="hidden sm:inline">Scroll for more</span>
+          <span className="sm:hidden">Scroll</span>
         </motion.div>
       </div>
     </div>
   )
-    }
+                       }
