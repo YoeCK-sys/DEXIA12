@@ -1,15 +1,14 @@
 'use client'
 
-import React, { useState, useEffect, useRef, ReactNode } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useInView } from 'framer-motion'
 import { FaGithub, FaLinkedin, FaEnvelope, FaCode, FaPalette, FaLightbulb, FaServer, FaDatabase, FaMobile, FaDesktop, FaCloud } from 'react-icons/fa'
-import ScrollIndicator from "./Scrollindicator"
+import ScrollIndicator from './ScrollIndicator'
 import Image from 'next/image'
 
 const AnimatedSection = ({ children, className = '' }: { children: ReactNode; className?: string }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, amount: 0.2 })
-
 
   return (
     <motion.section
@@ -96,24 +95,23 @@ export default function Portfolio() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 text-white p-8 relative z-10">
       <header className="text-center mb-16">
-        <div className="flex justify-center mb-8">
-          <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-blue-500">
-            <Image
-              src="/placeholder.svg?height=160&width=160"
-              alt="Yoel AG"
-              layout="fill"
-              objectFit="cover"
-            />
-          </div>
+        <div className="flex items-center justify-center mb-4">
+          <Image
+            src="/placeholder.svg?height=120&width=120"
+            alt="YoelAG"
+            width={120}
+            height={120}
+            className="rounded-full border-4 border-blue-500 mr-4"
+          />
+          <motion.h1 
+            className="text-4xl md:text-6xl font-bold font-mono"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            {'> YoelAG:'}
+          </motion.h1>
         </div>
-        <motion.h1 
-          className="text-4xl md:text-6xl font-bold mb-2 font-mono"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          {'> YoelAG:'}
-        </motion.h1>
         <motion.div
           className="text-3xl md:text-5xl font-bold mb-4 font-mono h-[1.2em] overflow-hidden"
           initial={{ opacity: 0 }}
@@ -246,4 +244,4 @@ export default function Portfolio() {
       <ScrollIndicator />
     </div>
   )
-    }
+      }
