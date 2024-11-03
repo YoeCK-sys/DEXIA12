@@ -6,9 +6,10 @@ import { FaGithub, FaLinkedin, FaEnvelope, FaCode, FaPalette, FaLightbulb, FaSer
 import ScrollIndicator from "./Scrollindicator"
 import Image from 'next/image'
 
-const AnimatedSection = ({ children, className = '' }) => {
+const AnimatedSection = ({ children, className = '' }: { children: ReactNode; className?: string }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, amount: 0.2 })
+
 
   return (
     <motion.section
