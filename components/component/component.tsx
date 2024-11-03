@@ -29,10 +29,10 @@ export default function Portfolio() {
   const [loopNum, setLoopNum] = useState(0)
   const [typingSpeed, setTypingSpeed] = useState(150)
   const titles = [
-    'Desarrollador Full Stack',
-    'Ingeniero de Software',
-    'Entusiasta de la Tecnología',
-    'Solucionador de Problemas'
+    'Desarrollador',
+    'Full Stack',
+    'Pelotudo',
+    'Mongolico'
   ]
   const { scrollYProgress } = useScroll()
 
