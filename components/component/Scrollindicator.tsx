@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { FaCode, FaDatabase, FaServer, FaMobile, FaDesktop, FaCloud } from 'react-icons/fa'
 
@@ -8,8 +8,12 @@ const icons = [FaCode, FaDatabase, FaServer, FaMobile, FaDesktop, FaCloud]
 
 export default function ScrollIndicator() {
   const [mounted, setMounted] = useState(false)
-  const { scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, {
+  const [totalHeight, setTotalHeight] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const { scrollY } = useScroll()
+  const transform = useTransform(scrollY, [0, totalHeight], [0, 1])
+  const scaleX = useSpring(transform, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
@@ -17,10 +21,31 @@ export default function ScrollIndicator() {
 
   useEffect(() => {
     setMounted(true)
+
+    const updateHeight = () => {
+      if (containerRef.current) {
+        const height = document.documentElement.scrollHeight - window.innerHeight
+        setTotalHeight(height)
+      }
+    }
+
+    // Actualizar la altura después de que todos los elementos se hayan cargado
+    window.addEventListener('load', updateHeight)
+    // También actualizar en caso de que cambie el tamaño de la ventana
+    window.addEventListener('resize', updateHeight)
+
+    // Llamar a updateHeight una vez después de un breve retraso
+    const timer = setTimeout(updateHeight, 1000)
+
+    return () => {
+      window.removeEventListener('load', updateHeight)
+      window.removeEventListener('resize', updateHeight)
+      clearTimeout(timer)
+    }
   }, [])
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-16 bg-gray-900 bg-opacity-80 backdrop-blur-sm z-50">
+    <div ref={containerRef} className="fixed bottom-0 left-0 right-0 h-16 bg-gray-900 bg-opacity-80 backdrop-blur-sm z-50">
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
         <motion.div
           className="text-blue-400 font-mono text-sm"
@@ -28,8 +53,8 @@ export default function ScrollIndicator() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          {mounted && (
-            <motion.span>{`Progress: ${Math.round(scrollYProgress.get() * 100)}%`}</motion.span>
+          {mounted && totalHeight > 0 && (
+            <motion.span>{`Progreso: ${Math.round(transform.get() * 100)}%`}</motion.span>
           )}
         </motion.div>
         <div className="flex-1 mx-4">
@@ -50,12 +75,12 @@ export default function ScrollIndicator() {
                 <motion.div
                   style={{
                     scale: useTransform(
-                      scrollYProgress,
+                      transform,
                       [index / icons.length, (index + 1) / icons.length],
                       [0.8, 1.2]
                     ),
                     opacity: useTransform(
-                      scrollYProgress,
+                      transform,
                       [index / icons.length, (index + 1) / icons.length],
                       [0.5, 1]
                     )
@@ -73,10 +98,10 @@ export default function ScrollIndicator() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span className="hidden sm:inline">Scroll for more</span>
-          <span className="sm:hidden">Scroll</span>
+          <span className="hidden sm:inline">Desplázate para más</span>
+          <span className="sm:hidden">Desplázate</span>
         </motion.div>
       </div>
     </div>
   )
-                       }
+                                 }
