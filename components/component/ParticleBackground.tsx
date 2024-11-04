@@ -140,10 +140,12 @@ const ParticleBackground = () => {
     }
 
     const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-      createParticles()
-    }
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  particles.length = 0 // Vacía el array de partículas
+  createParticles()
+}
+
 
     const handleMouseMove = (event: MouseEvent) => {
       mousePosition.current = { x: event.clientX, y: event.clientY }
