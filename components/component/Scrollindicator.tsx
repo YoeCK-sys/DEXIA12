@@ -3,6 +3,12 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { FaCode, FaDatabase, FaServer, FaMobile, FaDesktop, FaCloud } from 'react-icons/fa'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const icons = [FaCode, FaDatabase, FaServer, FaMobile, FaDesktop, FaCloud]
 
@@ -12,6 +18,7 @@ export default function ScrollIndicator() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { scrollY } = useScroll()
+  const scrollYProgress = useTransform(scrollY, [0, totalHeight], [0, 1])
   const transform = useTransform(scrollY, [0, totalHeight], [0, 1])
   const scaleX = useSpring(transform, {
     stiffness: 100,
@@ -44,69 +51,72 @@ export default function ScrollIndicator() {
     }
   }, [])
 
+  const getSectionName = (index: number) => {
+    const sections = ["Inicio", "Sobre mí", "Proyectos", "Habilidades", "Experiencia", "Contacto"];
+    return sections[index] || `Sección ${index + 1}`;
+  };
+
   return (
-    <div ref={containerRef} className="fixed bottom-0 left-0 right-0 h-16 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg z-50">
+    <div ref={containerRef} className="fixed bottom-0 left-0 right-0 h-16 bg-gray-900/70 backdrop-blur-md z-50">
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
         <motion.div
           className="text-blue-400 font-mono text-sm"
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
           {mounted && totalHeight > 0 && (
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {`Progreso: ${Math.round(transform.get() * 100)}%`}
-            </motion.span>
+            <motion.span>{`Progreso: ${Math.round(transform.get() * 100)}%`}</motion.span>
           )}
         </motion.div>
         <div className="flex-1 mx-4">
-          <div className="h-2 bg-blue-900 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-blue-500"
-              style={{ scaleX, originX: 0 }}
-            />
-          </div>
+          <motion.div
+            className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+            style={{ scaleX, originX: 0 }}
+          />
           <div className="relative h-2">
             {icons.map((Icon, index) => (
-              <motion.div
-                key={index}
-                className="absolute top-1/2 -translate-y-1/2 cursor-pointer"
-                style={{
-                  left: `${(index / (icons.length - 1)) * 100}%`,
-                  x: '-50%'
-                }}
-                whileHover={{ y: -2 }}
-              >
-                <motion.div
-                  style={{
-                    scale: useTransform(
-                      transform,
-                      [index / icons.length, (index + 1) / icons.length],
-                      [0.8, 1.2]
-                    ),
-                    opacity: useTransform(
-                      transform,
-                      [index / icons.length, (index + 1) / icons.length],
-                      [0.5, 1]
-                    ),
-                    transition: { duration: 0.3 }
-                  }}
-                >
-                  <Icon className="text-blue-300 text-xl" />
-                </motion.div>
-              </motion.div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <motion.div
+                      key={index}
+                      className="absolute top-1/2 -translate-y-1/2"
+                      style={{
+                        left: `${(index / (icons.length - 1)) * 100}%`,
+                        x: '-50%'
+                      }}
+                    >
+                      <motion.div
+                        style={{
+                          scale: useSpring(
+                            scrollYProgress.get() > index / icons.length ? 1.2 : 0.8,
+                            { stiffness: 300, damping: 30 }
+                          ),
+                          opacity: useSpring(
+                            scrollYProgress.get() > index / icons.length ? 1 : 0.5,
+                            { stiffness: 300, damping: 30 }
+                          )
+                        }}
+                        whileHover={{ scale: 1.3, transition: { duration: 0.2 } }}
+                      >
+                        <Icon className="text-blue-300 text-xl" />
+                      </motion.div>
+                    </motion.div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{getSectionName(index)}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ))}
           </div>
         </div>
         <motion.div
           className="text-blue-400 font-mono text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
         >
           <span className="hidden sm:inline">Desplázate para más</span>
           <span className="sm:hidden">Desplázate</span>
@@ -114,4 +124,4 @@ export default function ScrollIndicator() {
       </div>
     </div>
   )
-        }
+      }
