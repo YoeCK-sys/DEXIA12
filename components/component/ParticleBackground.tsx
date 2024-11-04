@@ -6,7 +6,6 @@ import { motion } from 'framer-motion'
 const ParticleBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mousePosition = useRef({ x: 0, y: 0 })
-  const scrollOffset = useRef(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -38,35 +37,32 @@ const ParticleBackground = () => {
       ctx.lineWidth = 0.8
 
       particles.forEach((particle, i) => {
-        // Apply forces
+        // Aplica las fuerzas
         applyForces(particle, i)
 
-        // Update position
+        // Actualiza la posición
         particle.x += particle.vx
         particle.y += particle.vy
 
-        // Adjust for scroll
-        const adjustedY = particle.y - scrollOffset.current
-
-        // Boundary check with smooth transition
+        // Comprobación de límites para transición suave
         if (particle.x < 0) particle.x = canvas.width
         if (particle.x > canvas.width) particle.x = 0
-        if (adjustedY < 0) particle.y = scrollOffset.current + canvas.height
-        if (adjustedY > canvas.height) particle.y = scrollOffset.current
+        if (particle.y < 0) particle.y = canvas.height
+        if (particle.y > canvas.height) particle.y = 0
 
-        // Draw particle
+        // Dibuja la partícula
         ctx.beginPath()
-        ctx.arc(particle.x, adjustedY, particle.size, 0, Math.PI * 2)
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
         ctx.fillStyle = 'rgba(52, 152, 219, 0.7)'
         ctx.fill()
 
-        // Draw connections
-        drawConnections(particle, i, adjustedY)
+        // Dibuja conexiones
+        drawConnections(particle, i, particle.y)
       })
     }
 
     const applyForces = (particle: typeof particles[0], index: number) => {
-      // Repulsion force
+      // Fuerza de repulsión
       particles.forEach((otherParticle, i) => {
         if (i !== index) {
           const dx = otherParticle.x - particle.x
@@ -80,20 +76,20 @@ const ParticleBackground = () => {
         }
       })
 
-      // Mouse attraction
+      // Atracción del mouse
       const dx = mousePosition.current.x - particle.x
-      const dy = (mousePosition.current.y + scrollOffset.current) - particle.y
+      const dy = mousePosition.current.y - particle.y
       const distance = Math.sqrt(dx * dx + dy * dy)
       if (distance < 200) {
         particle.vx += dx / distance * 0.2
         particle.vy += dy / distance * 0.2
       }
 
-      // Damping
+      // Amortiguación
       particle.vx *= 0.98
       particle.vy *= 0.98
 
-      // Max speed limit
+      // Límite de velocidad máxima
       const speed = Math.sqrt(particle.vx * particle.vx + particle.vy * particle.vy)
       if (speed > 2) {
         particle.vx = (particle.vx / speed) * 2
@@ -101,17 +97,17 @@ const ParticleBackground = () => {
       }
     }
 
-    const drawConnections = (particle: typeof particles[0], index: number, adjustedY: number) => {
+    const drawConnections = (particle: typeof particles[0], index: number, y: number) => {
       particles.forEach((otherParticle, i) => {
         if (i > index) {
           const dx = otherParticle.x - particle.x
-          const dy = (otherParticle.y - scrollOffset.current) - adjustedY
+          const dy = otherParticle.y - y
           const distance = Math.sqrt(dx * dx + dy * dy)
 
           if (distance < 150) {
             ctx.beginPath()
-            ctx.moveTo(particle.x, adjustedY)
-            ctx.lineTo(otherParticle.x, otherParticle.y - scrollOffset.current)
+            ctx.moveTo(particle.x, y)
+            ctx.lineTo(otherParticle.x, otherParticle.y)
             ctx.globalAlpha = 1 - distance / 150
             ctx.stroke()
             ctx.globalAlpha = 1
@@ -119,14 +115,14 @@ const ParticleBackground = () => {
         }
       })
 
-      // Connect to mouse
+      // Conexión al mouse
       const dx = mousePosition.current.x - particle.x
-      const dy = mousePosition.current.y - adjustedY
+      const dy = mousePosition.current.y - y
       const distance = Math.sqrt(dx * dx + dy * dy)
 
       if (distance < 200) {
         ctx.beginPath()
-        ctx.moveTo(particle.x, adjustedY)
+        ctx.moveTo(particle.x, y)
         ctx.lineTo(mousePosition.current.x, mousePosition.current.y)
         ctx.globalAlpha = 1 - distance / 200
         ctx.stroke()
@@ -140,19 +136,14 @@ const ParticleBackground = () => {
     }
 
     const handleResize = () => {
-  canvas.width = window.innerWidth
-  canvas.height = window.innerHeight
-  particles.length = 0 // Vacía el array de partículas
-  createParticles()
-}
-
+      canvas.width = window.innerWidth
+      canvas.height = document.documentElement.scrollHeight // Ajusta el canvas a la altura total del documento
+      particles.length = 0 // Vacía el array de partículas para evitar duplicados
+      createParticles()
+    }
 
     const handleMouseMove = (event: MouseEvent) => {
       mousePosition.current = { x: event.clientX, y: event.clientY }
-    }
-
-    const handleScroll = () => {
-      scrollOffset.current = window.pageYOffset
     }
 
     handleResize()
@@ -160,13 +151,11 @@ const ParticleBackground = () => {
 
     window.addEventListener('resize', handleResize)
     window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('scroll', handleScroll)
 
     return () => {
       cancelAnimationFrame(animationFrameId)
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
@@ -179,6 +168,6 @@ const ParticleBackground = () => {
       transition={{ duration: 1 }}
     />
   )
-}
+} 
 
 export default ParticleBackground
