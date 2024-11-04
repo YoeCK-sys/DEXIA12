@@ -32,7 +32,7 @@ export default function Portfolio() {
     'Desarrollador',
     'Full Stack',
     'Pelotudo',
-    'Mongolico'
+    'Mongolico.'
   ]
   const { scrollYProgress } = useScroll()
 
