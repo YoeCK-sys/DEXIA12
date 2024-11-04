@@ -15,36 +15,35 @@ const ParticleBackground = () => {
     if (!ctx) return
 
     let animationFrameId: number
-
     const particles: { x: number; y: number; vx: number; vy: number; size: number }[] = []
 
     const createParticles = () => {
-      const particleCount = 150 // Aumentar el número de partículas para una mayor densidad
+      const particleCount = 60 // Reducimos la cantidad para evitar sobrecarga y hacerlas más visibles
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.3, // Reducir la velocidad para un efecto más controlado
-          vy: (Math.random() - 0.5) * 0.3,
-          size: Math.random() * 2 + 1 // Tamaño reducido para mayor suavidad visual
+          vx: (Math.random() - 0.5) * 0.1, // Velocidades más bajas para un movimiento más suave
+          vy: (Math.random() - 0.5) * 0.1,
+          size: Math.random() * 3 + 2 // Tamaño más grande para mayor visibilidad
         })
       }
     }
 
     const drawParticles = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.strokeStyle = 'rgba(52, 152, 219, 0.2)'
-      ctx.lineWidth = 0.6
+      ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)'
+      ctx.lineWidth = 0.8
 
       particles.forEach((particle, i) => {
-        // Aplica las fuerzas
+        // Aplica fuerzas
         applyForces(particle, i)
 
-        // Actualiza la posición
+        // Actualiza posición
         particle.x += particle.vx
         particle.y += particle.vy
 
-        // Comprobación de límites para transición suave
+        // Transición suave en los límites
         if (particle.x < 0) particle.x = canvas.width
         if (particle.x > canvas.width) particle.x = 0
         if (particle.y < 0) particle.y = canvas.height
@@ -53,7 +52,7 @@ const ParticleBackground = () => {
         // Dibuja la partícula
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(52, 152, 219, 0.8)'
+        ctx.fillStyle = 'rgba(52, 152, 219, 0.9)'
         ctx.fill()
 
         // Dibuja conexiones
@@ -62,16 +61,15 @@ const ParticleBackground = () => {
     }
 
     const applyForces = (particle: typeof particles[0], index: number) => {
-      // Fuerza de repulsión
       particles.forEach((otherParticle, i) => {
         if (i !== index) {
           const dx = otherParticle.x - particle.x
           const dy = otherParticle.y - particle.y
           const distance = Math.sqrt(dx * dx + dy * dy)
-          if (distance < 70) { // Menor distancia para conexiones más frecuentes
-            const force = (70 - distance) / 70
-            particle.vx -= dx / distance * force * 0.02
-            particle.vy -= dy / distance * force * 0.02
+          if (distance < 100) { // Conexión más frecuente con menor distancia
+            const force = (100 - distance) / 100
+            particle.vx -= dx / distance * force * 0.01
+            particle.vy -= dy / distance * force * 0.01
           }
         }
       })
@@ -81,13 +79,13 @@ const ParticleBackground = () => {
       const dy = mousePosition.current.y - particle.y
       const distance = Math.sqrt(dx * dx + dy * dy)
       if (distance < 150) {
-        particle.vx += dx / distance * 0.15
-        particle.vy += dy / distance * 0.15
+        particle.vx += dx / distance * 0.1
+        particle.vy += dy / distance * 0.1
       }
 
       // Amortiguación
-      particle.vx *= 0.95
-      particle.vy *= 0.95
+      particle.vx *= 0.96
+      particle.vy *= 0.96
     }
 
     const drawConnections = (particle: typeof particles[0], index: number) => {
@@ -97,18 +95,18 @@ const ParticleBackground = () => {
           const dy = otherParticle.y - particle.y
           const distance = Math.sqrt(dx * dx + dy * dy)
 
-          if (distance < 90) { // Menor distancia para más conexiones
+          if (distance < 100) { // Menor distancia para conexiones
             ctx.beginPath()
             ctx.moveTo(particle.x, particle.y)
             ctx.lineTo(otherParticle.x, otherParticle.y)
-            ctx.globalAlpha = 1 - distance / 90
+            ctx.globalAlpha = 1 - distance / 100
             ctx.stroke()
             ctx.globalAlpha = 1
           }
         }
       })
 
-      // Conexión al mouse
+      // Conexión con el mouse
       const dx = mousePosition.current.x - particle.x
       const dy = mousePosition.current.y - particle.y
       const distance = Math.sqrt(dx * dx + dy * dy)
@@ -130,7 +128,7 @@ const ParticleBackground = () => {
 
     const handleResize = () => {
       canvas.width = window.innerWidth
-      canvas.height = document.documentElement.scrollHeight
+      canvas.height = document.documentElement.scrollHeight // Para cubrir toda la página
       particles.length = 0
       createParticles()
     }
