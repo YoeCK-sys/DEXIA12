@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, ReactNode} from 'react'
 import { motion, useScroll, useInView } from 'framer-motion'
 import { FaGithub, FaLinkedin, FaEnvelope, FaCode, FaPalette, FaLightbulb, FaServer, FaDatabase, FaMobile, FaDesktop, FaCloud } from 'react-icons/fa'
-import ScrollIndicator from './ScrollIndicator'
+import ScrollIndicator from './Scrollindicator'
 import Image from 'next/image'
 import ParticleBackground from './ParticleBackground'
 
@@ -242,7 +242,7 @@ export default function Portfolio() {
 
       <ScrollIndicator />
       <div
-        className="fixed inset-0 flex items-center justify-center text-[20vw] font-bold text-blue-500 opacity-[0.03] pointer-events-none select-none overflow-hidden whitespace-nowrap"
+        className="fixed inset-0 flex items-center justify-center text-[20vw] font-bold text-blue-500 opacity-[0.04] pointer-events-none select-none overflow-hidden whitespace-nowrap"
         style={{ zIndex: 5 }}
       >
         YoelAG
